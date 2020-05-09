@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 import datetime
 
 
+
 app = Flask(__name__) #instancio la aplicación Flask
 
 #configuraciones de la app Flask
@@ -21,6 +22,10 @@ class Clients(db.Model):
     clients_job = db.Column(db.String(30), unique=True, nullable=True)
     clients_address = db.Column(db.String(100), unique=False, nullable=True)
     clients_contact = db.Column(db.String(40), unique=False, nullable=True)
+
+    clients_relationship_cases = db.relationship('Cases', backref='case_client')
+    clients_relationship_corporations = db.relationship('Corporations', backref='corporation_client')
+
 
     def __repr__(self):
         return '<Clients %r>' % self.clients_id, self.clients_name, self.clients_rut, self.clients_nationality, self.clients_civilStatus, self.clients_job, self.clients_address, self.clients_contact
@@ -41,9 +46,11 @@ class Cases(db.Model):
     cases_incomeDate = db.Column(db.DateTime, unique=False, nullable = False, default=datetime.datetime.utcnow)
     cases_deadLine = db.Column(db.DateTime, unique=False, nullable = True)
 
-    client_id = db.Column(db.Integer, db.ForeignKey('clients.clients_id'))
-    cases_documents = db.relationship('Document', backref='Case', lazy=True)
-    #lawyers_case = db.relationship('Lawyer', secondary=lawyer_case, lazy='subquery', backref=db.backref('case', lazy=True))
+    #se pone minuscial la tabla clients pues mira directamente a la base de datos y no a la clase de python
+    cases_client_id = db.Column(db.Integer, db.ForeignKey('clients.clients_id'))
+    # establece relacion con tabla documents
+    cases_relationship_documents = db.relationship('Documents', backref='case_document')
+
 
     def __repr__(self):
        return '<Cases %r>' %  self.cases_id, self.cases_description, self.cases_rol_rit_ruc, self.cases_trial_entity, self.cases_legalIssue, self.cases_procedure, self.cases_objetive, self.cases_update, self.cases_updateDate, self.cases_activeCase, self.cases_incomeDate, self.cases_deadLine, 
@@ -55,7 +62,7 @@ class Documents(db.Model):
     documents_type = db.Column(db.String(100), unique=False, nullable=True)
     documents_date = db.Column(db.DateTime, unique=False, nullable = False, default=datetime.datetime.utcnow)
 
-    case_id = db.Column(db.Integer, db.ForeignKey('cases.cases_id'), nullable=False)
+    documents_cases_id = db.Column(db.Integer, db.ForeignKey('cases.cases_id'))
 
     def __repr__(self):
         return '<Document %r>' % self.documents_id, self.documents_type, self.documents_date
@@ -70,6 +77,8 @@ class Corporations(db.Model):
     corporation_CBR = db.Column(db.String(50), unique=False, nullable=False)
     corporation_rolSII = db.Column(db.String(16), unique=False, nullable=True)
     corporation_taxType = db.Column(db.String(15), unique=False, nullable=True)
+
+    corporation_client_id = db.Column(db.ForeignKey('clients.clients_id'))
     
     
 
