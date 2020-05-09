@@ -1,8 +1,14 @@
-from flask import Flask
+from flask import Flask, jsonify
 from flask_sqlalchemy import SQLAlchemy
 import datetime
+import os
 
 
+path = ".\pdf_store"
+if os.path.isfile(path) == True:
+    os.mkdir(path)
+else:
+    print("")
 
 app = Flask(__name__) #instancio la aplicación Flask
 
@@ -30,6 +36,17 @@ class Clients(db.Model):
     def __repr__(self):
         return '<Clients %r>' % self.clients_id, self.clients_name, self.clients_rut, self.clients_nationality, self.clients_civilStatus, self.clients_job, self.clients_address, self.clients_contact
 
+    def serialize(self):
+        return {
+            "clients_id": self.clients_id,
+            "clients_name": self.clients_name,
+            "clients_rut": self.clients_rut,
+            "clients_nationality": self.clients_nationality,
+            "clients_civilStatus": self.clients_civilStatus,
+            "clients_job": self.clients_job,
+            "clients_address": self.clients_address,
+            "clients_contact": self.clients_contact,
+        }
 
 class Cases(db.Model):
     __tablename__ ='cases'
@@ -85,3 +102,24 @@ class Corporations(db.Model):
     def __repr__(self):
         return '<Message %r>' % self.corporation_id, self.corporation_name, self.corporation_type, self.corporation_CBR, self.corporation_rolSII, self.corporation_taxType
  
+
+
+@app.route('/')
+def user():
+    return "HOLA MUNDO"
+
+@app.route('/casos/<string:rut>')# SE MUESTRA EN EL BUSCADOR DEL CLIENTE
+def casos(rut):
+    if rut == '"17.402.744-7"' or rut == '"20.968.696-1"':
+        queryList=[]
+        #my_cursor.execute("select caso_materia, caso_rol_rit_ruc, caso_id, cliente_id from casos")
+        #for i in my_cursor: 
+         #   queryList.append(i)
+        #return jsonify({"resp": queryList})
+        
+        resp = db.session.query(Clients).filter_by(clients_name='Guille').first()
+        return jsonify({"resp": resp.serialize()}),200
+
+    else:
+        
+        return 'Nop'
