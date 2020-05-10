@@ -1,10 +1,10 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 import datetime
 import os
 
 
-path = ".\pdf_store"
+path = "./pdf_store"
 if os.path.isfile(path) == True:
     os.mkdir(path)
 else:
@@ -63,7 +63,7 @@ class Cases(db.Model):
     cases_incomeDate = db.Column(db.DateTime, unique=False, nullable = False, default=datetime.datetime.utcnow)
     cases_deadLine = db.Column(db.DateTime, unique=False, nullable = True)
 
-    #se pone minuscial la tabla clients pues mira directamente a la base de datos y no a la clase de python
+    #se pone minuscula la tabla clients pues mira directamente a la base de datos y no a la clase de python
     cases_client_id = db.Column(db.Integer, db.ForeignKey('clients.clients_id'))
     # establece relacion con tabla documents
     cases_relationship_documents = db.relationship('Documents', backref='case_document')
@@ -108,18 +108,71 @@ class Corporations(db.Model):
 def user():
     return "HOLA MUNDO"
 
-@app.route('/casos/<string:rut>')# SE MUESTRA EN EL BUSCADOR DEL CLIENTE
-def casos(rut):
-    if rut == '"17.402.744-7"' or rut == '"20.968.696-1"':
-        queryList=[]
-        #my_cursor.execute("select caso_materia, caso_rol_rit_ruc, caso_id, cliente_id from casos")
-        #for i in my_cursor: 
-         #   queryList.append(i)
-        #return jsonify({"resp": queryList})
-        
-        resp = db.session.query(Clients).filter_by(clients_name='Guille').first()
-        return jsonify({"resp": resp.serialize()}),200
+@app.route('/clientes/<string:rut>', methods = ['GET','POST', 'PUT', 'DELETE'])# SE MUESTRA EN EL BUSCADOR DEL CLIENTE
+def clients(rut):
+    if request.method == 'GET':
+        list=[]
+        if rut == "17.402.744-7" or rut == "20.968.696-1":
+            resp = db.session.query(Clients).all()
+            for item in resp:
+                list.append(item.clients_name)
+            return jsonify({"resp": list}),200
+        else:
+            resp = db.session.query(Clients).filter_by(clients_rut=rut).all()
+            for item in resp:
+                list.append(item.clients_name)
+            return jsonify({"resp": list}),200
 
-    else:
+    if request.method == 'POST':
+        incomingData = request.get_json()
+        insertedData= Clients(clients_name=incomingData['name'], clients_rut=incomingData['rut'], clients_nationality=incomingData['nationality'], clients_civilStatus=incomingData['civilStatus'], clients_job=incomingData['job'], clients_address=incomingData['address'], clients_contact=incomingData['contact'] )
+        db.session.add(insertedData)
+        db.session.commit()
+        return "data inserted",200
+
+    if request.method == 'PUT':
+        incomingData = request.get_json()
+        updateData= Clients.query.filter_by(clients_rut=rut).first()
+        if incomingData['name'] != "":
+            updateData.name = "updated!"
+            db.session.commit()
+            return "updated"
+
+        if incomingData['rut'] != "":
+            updateData.clients_rut = "updated!"
+            db.session.commit()
+            return "updated"
+
+        if incomingData['nationality'] != "":
+            updateData.clients_nationality = "updated!"
+            db.session.commit()
+            return "updated"
         
-        return 'Nop'
+        if incomingData['civilStatus'] != "":
+            updateData.clients_civilStatus = "updated!"
+            db.session.commit()
+            return "updated"
+
+        if incomingData['job'] != "":
+            updateData.clients_job = "updated!"
+            db.session.commit()
+            return "updated"
+        
+        if incomingData['address'] != "":
+            updateData.clients_address = "updated!"
+            db.session.commit()
+            return "updated"
+
+        if incomingData['contact'] != "":
+            updateData.clients_contact = "updated!"
+            db.session.commit()
+            return "updated"     
+        
+
+    if request.method == 'DELETE':
+        incomingData = request.get_json()
+        deletedRow= Clients.query.filter_by(clients_rut=rut).first()
+        db.session.delete(deletedRow)
+        db.session.commit()
+        return "data deleted",200
+        
