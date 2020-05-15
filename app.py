@@ -113,14 +113,32 @@ def clients(rut):
     if request.method == 'GET':
         list=[]
         if rut == "17.402.744-7" or rut == "20.968.696-1":
-            resp = db.session.query(Clients).all()
+            resp = db.session.query(Clients).all() #DEPURAR ESTO, TOMAR RESP Y QUE EL MODEL ARROJE UN OBJ DE TODOS LOS CAMPOS
             for item in resp:
-                list.append(item.clients_name)
+                list.append({
+            "clients_id": item.clients_id,
+            "clients_name": item.clients_name,
+            "clients_rut": item.clients_rut,
+            "clients_nationality": item.clients_nationality,
+            "clients_civilStatus": item.clients_civilStatus,
+            "clients_job": item.clients_job,
+            "clients_address": item.clients_address,
+            "clients_contact": item.clients_contact
+        })
             return jsonify({"resp": list}),200
         else:
             resp = db.session.query(Clients).filter_by(clients_rut=rut).all()
             for item in resp:
-                list.append(item.clients_name)
+                list.append({
+            "clients_id": item.clients_id,
+            "clients_name": item.clients_name,
+            "clients_rut": item.clients_rut,
+            "clients_nationality": item.clients_nationality,
+            "clients_civilStatus": item.clients_civilStatus,
+            "clients_job": item.clients_job,
+            "clients_address": item.clients_address,
+            "clients_contact": item.clients_contact
+        })
             return jsonify({"resp": list}),200
 
     if request.method == 'POST':
@@ -170,7 +188,6 @@ def clients(rut):
         
 
     if request.method == 'DELETE':
-        incomingData = request.get_json()
         deletedRow= Clients.query.filter_by(clients_rut=rut).first()
         db.session.delete(deletedRow)
         db.session.commit()
