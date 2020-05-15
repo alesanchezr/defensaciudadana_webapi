@@ -150,43 +150,19 @@ def clients(rut):
 
     if request.method == 'PUT':
         incomingData = request.get_json()
-        updateData= Clients.query.filter_by(clients_rut=rut).first()
-        if incomingData['name'] != "":
-            updateData.name = incomingData['name']
-            db.session.commit()
-            return "updated"
+        updateData= Clients.query.filter_by(clients_rut=rut)
 
-        if incomingData['rut'] != "":
-            updateData.clients_rut = incomingData['rut']
-            db.session.commit()
-            return "updated"
+        listOfNotEmptyStrings = []
+        for item in incomingData:
+            if incomingData[item] != "":
+                listOfNotEmptyStrings.append(item)
 
-        if incomingData['nationality'] != "":
-            updateData.clients_nationality = incomingData['nationality']
+        for item2 in listOfNotEmptyStrings:
+            print(incomingData[item2], item2)
+            updateData.update({item2: incomingData[item2]})
             db.session.commit()
-            return "updated"
-        
-        if incomingData['civilStatus'] != "":
-            updateData.clients_civilStatus = incomingData['civilStatus'] 
-            db.session.commit()
-            return "updated"
-
-        if incomingData['job'] != "":
-            updateData.clients_job = incomingData['job']
-            db.session.commit()
-            return "updated"
-        
-        if incomingData['address'] != "":
-            updateData.clients_address = incomingData['address'] 
-            db.session.commit()
-            return "updated"
-
-        if incomingData['contact'] != "":
-            updateData.clients_contact = incomingData['contact']
-            db.session.commit()
-            return "updated"     
-        
-
+        return "updated"
+       
     if request.method == 'DELETE':
         deletedRow= Clients.query.filter_by(clients_rut=rut).first()
         db.session.delete(deletedRow)
@@ -250,42 +226,18 @@ def cases(rut):
 
     if request.method == 'PUT':
         incomingData = request.get_json()
-        updateData= Cases.query.filter_by(cases_rol_rit_ruc=incomingData["cases_rol_rit_ruc"]).first()
-        print(updateData.cases_description)
-        if incomingData['cases_description'] != "":
-            updateData.cases_description = incomingData['cases_description']
-            db.session.commit()
-            return "updated"   
-        
-        if incomingData['cases_trial_entity'] != "":
-            updateData.cases_trial_entity = incomingData['cases_trial_entity']
-            db.session.commit()
-            return "updated"
+        updateData= Cases.query.filter_by(cases_rol_rit_ruc=incomingData["cases_rol_rit_ruc"])
 
-        if incomingData['cases_legalIssue'] != "":
-            updateData.cases_legalIssue = incomingData['cases_legalIssue']
-            db.session.commit()
-            return "updated"
-        if incomingData['cases_procedure'] != "":
-            updateData.cases_procedure = incomingData['cases_procedure']
-            db.session.commit()
-            return "updated"
-        if incomingData['cases_objetive'] != "":
-            updateData.cases_objetive = incomingData['cases_objetive']
-            db.session.commit()
-            return "updated"
-        if incomingData['cases_update'] != "":
-            updateData.cases_update = incomingData['cases_update']
-            db.session.commit()
-            return "updated"
-        if incomingData['cases_activeCase'] != "":
-            updateData.cases_activeCase = incomingData['cases_activeCase']
-            db.session.commit()
-            return "updated"
-        if incomingData['cases_client_id'] != "":
-            updateData.cases_client_id = incomingData['cases_client_id']
-            db.session.commit()
-            return "updated"
+        listOfNotEmptyStrings = []
+        for item in incomingData:
+            if incomingData[item] != "":
+                listOfNotEmptyStrings.append(item)
+
+        for item2 in listOfNotEmptyStrings:
+            print(incomingData[item2], item2)
+            updateData.update({item2: incomingData[item2]})
+            db.session.commit()  
+            return "updated"      
          
 
     if request.method == 'DELETE':
