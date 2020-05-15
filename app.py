@@ -251,11 +251,42 @@ def cases(rut):
     if request.method == 'PUT':
         incomingData = request.get_json()
         updateData= Cases.query.filter_by(cases_rol_rit_ruc=incomingData["cases_rol_rit_ruc"]).first()
-        if incomingData['cases_description'] != " ":
-            updateData.cases_description = incomingData['cases_description'] 
+        print(updateData.cases_description)
+        if incomingData['cases_description'] != "":
+            updateData.cases_description = incomingData['cases_description']
+            db.session.commit()
+            return "updated"   
+        
+        if incomingData['cases_trial_entity'] != "":
+            updateData.cases_trial_entity = incomingData['cases_trial_entity']
             db.session.commit()
             return "updated"
-        
+
+        if incomingData['cases_legalIssue'] != "":
+            updateData.cases_legalIssue = incomingData['cases_legalIssue']
+            db.session.commit()
+            return "updated"
+        if incomingData['cases_procedure'] != "":
+            updateData.cases_procedure = incomingData['cases_procedure']
+            db.session.commit()
+            return "updated"
+        if incomingData['cases_objetive'] != "":
+            updateData.cases_objetive = incomingData['cases_objetive']
+            db.session.commit()
+            return "updated"
+        if incomingData['cases_update'] != "":
+            updateData.cases_update = incomingData['cases_update']
+            db.session.commit()
+            return "updated"
+        if incomingData['cases_activeCase'] != "":
+            updateData.cases_activeCase = incomingData['cases_activeCase']
+            db.session.commit()
+            return "updated"
+        if incomingData['cases_client_id'] != "":
+            updateData.cases_client_id = incomingData['cases_client_id']
+            db.session.commit()
+            return "updated"
+         
 
     if request.method == 'DELETE':
         incomingData = request.get_json()
