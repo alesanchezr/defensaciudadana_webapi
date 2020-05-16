@@ -1,14 +1,14 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_file
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.sql import func
+from werkzeug import secure_filename
 import datetime
 import os
 
 
 path = "./pdf_store"
-if os.path.isfile(path) == True:
+if not os.path.exists(path):
     os.mkdir(path)
-else:
-    print("")
 
 app = Flask(__name__) #instancio la aplicación Flask
 
@@ -24,8 +24,8 @@ class Clients(db.Model):
     clients_name = db.Column(db.String(50), unique=True, nullable=False)
     clients_rut = db.Column(db.String(16), unique=True, nullable=False)
     clients_nationality = db.Column(db.String(20), unique=False, nullable=True)
-    clients_civilStatus = db.Column(db.String(30), unique=True, nullable=True)
-    clients_job = db.Column(db.String(30), unique=True, nullable=True)
+    clients_civilStatus = db.Column(db.String(30), unique=False, nullable=True)
+    clients_job = db.Column(db.String(30), unique=False, nullable=True)
     clients_address = db.Column(db.String(100), unique=False, nullable=True)
     clients_contact = db.Column(db.String(40), unique=False, nullable=True)
 
@@ -77,7 +77,7 @@ class Documents(db.Model):
     __tablename__='documents'
     documents_id = db.Column(db.Integer, primary_key=True) 
     documents_type = db.Column(db.String(100), unique=False, nullable=True)
-    documents_date = db.Column(db.DateTime, unique=False, nullable = False, default=datetime.datetime.utcnow)
+    documents_date = db.Column(db.DateTime, unique=False, nullable = False, server_default=func.now())
 
     documents_cases_id = db.Column(db.Integer, db.ForeignKey('cases.cases_id'))
 
@@ -100,13 +100,13 @@ class Corporations(db.Model):
     
 
     def __repr__(self):
-        return '<Message %r>' % self.corporation_id, self.corporation_name, self.corporation_type, self.corporation_CBR, self.corporation_rolSII, self.corporation_taxType
+        return '<Corporations %r>' % self.corporation_id, self.corporation_name, self.corporation_type, self.corporation_CBR, self.corporation_rolSII, self.corporation_taxType
  
 
 
 @app.route('/')
 def user():
-    return "HOLA MUNDO"
+    return "ROOT"
 
 @app.route('/clientes/<string:rut>', methods = ['GET','POST', 'PUT', 'DELETE'])# SE MUESTRA EN EL BUSCADOR DEL CLIENTE
 def clients(rut):
@@ -247,4 +247,73 @@ def cases(rut):
         db.session.commit()
         return "data deleted",200
         
-        
+@app.route('/documentos/<string:cases_rol_rit_ruc>', methods = ['GET','POST', 'PUT', 'DELETE'])# SE MUESTRA EN EL BUSCADOR DEL CLIENTE
+def documents(cases_rol_rit_ruc):
+    if request.method == 'GET':
+        list=[]
+        if cases_rol_rit_ruc == "17.402.744-7" or cases_rol_rit_ruc == "20.968.696-1":
+            resp = db.session.query(Documents).all() #DEPURAR ESTO, TOMAR RESP Y QUE EL MODEL ARROJE UN OBJ DE TODOS LOS CAMPOS
+            for item in resp:
+                list.append({
+            "documents_type": item.documents_type,
+            "documents_date": item.documents_date,
+            "documents_cases_id": item.documents_cases_id
+        })
+            return jsonify({"resp": list}),200
+        else:
+            resp = db.session.query(Cases).filter_by(cases_rol_rit_ruc=cases_rol_rit_ruc).first()
+            cases_id= resp.cases_id
+            documents = db.session.query(Documents).filter_by(documents_cases_id=cases_id).all()
+            #document_id = documents.documents_id
+            for item in documents:
+                list.append({
+             "documents_type": item.documents_type,
+            "documents_date": item.documents_date,
+            "documents_cases_id": item.documents_cases_id
+        })
+
+            return jsonify({"resp": list})#, send_file(f'./pdf_store/document_id_{document_id}.pdf', attachment_filename='document_id_{document_id}.pdf'), 200
+
+    if request.method == 'POST':
+        incomingData = request.form
+        insertedData= Documents(documents_type=str(incomingData['documents_type']), documents_cases_id=incomingData['documents_cases_id'] )
+        db.session.add(insertedData)
+        db.session.commit()
+
+        lastId = db.session.query(Documents).order_by(Documents.documents_id.desc()).limit(1)
+        list=[]
+        for item in lastId:
+            print(item.documents_id)
+            list.append(item.documents_id)
+
+        profile = request.files['pdf']
+        uploads_dir = os.path.join('./', 'pdf_store')
+        print(uploads_dir)
+        profile.save(os.path.join(uploads_dir, secure_filename(f"[document_id {list[0]}].pdf"))) 
+  
+
+
+        return jsonify({"resp": "ok"}),200
+
+    if request.method == 'PUT':
+        incomingData = request.get_json()
+        updateData= Cases.query.filter_by(cases_rol_rit_ruc=incomingData["cases_rol_rit_ruc"])
+
+        listOfNotEmptyStrings = []
+        for item in incomingData:
+            if incomingData[item] != "":
+                listOfNotEmptyStrings.append(item)
+
+        for item2 in listOfNotEmptyStrings:
+            print(incomingData[item2], item2)
+            updateData.update({item2: incomingData[item2]})
+            db.session.commit()  
+            return "updated"      
+         
+
+    if request.method == 'DELETE':
+        incomingData = request.get_json()
+        deletedRow= Cases.query.filter_by(cases_rol_rit_ruc=incomingData["cases_rol_rit_ruc"]).first()
+        db.session.delete(deletedRow)
+        db.session.commit()
+        return "data deleted",200
