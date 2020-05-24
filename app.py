@@ -146,7 +146,8 @@ def clients(rut):
         insertedData= Clients(clients_name=incomingData['name'], clients_rut=incomingData['rut'], clients_nationality=incomingData['nationality'], clients_civilStatus=incomingData['civilStatus'], clients_job=incomingData['job'], clients_address=incomingData['address'], clients_contact=incomingData['contact'] )
         db.session.add(insertedData)
         db.session.commit()
-        return "data inserted",200
+        lastId = insertedData.clients_id
+        return jsonify({"resp": "inserted data", "lastId": str(lastId)}),200
 
     if request.method == 'PUT':
         incomingData = request.get_json()
@@ -176,7 +177,9 @@ def cases(rut):
         list=[]
         if rut == "17.402.744-7" or rut == "20.968.696-1":
             resp = db.session.query(Cases).all() #DEPURAR ESTO, TOMAR RESP Y QUE EL MODEL ARROJE UN OBJ DE TODOS LOS CAMPOS
+            
             for item in resp:
+                getClientData = db.session.query(Clients).filter_by(clients_id=item.cases_client_id).first()
                 list.append({
             "cases_id": item.cases_id,
             "cases_description": item.cases_description,
@@ -190,13 +193,15 @@ def cases(rut):
             "cases_activeCase": item.cases_activeCase,
             "cases_incomeDate": item.cases_incomeDate,
             "cases_deadLine": item.cases_deadLine,
-            "cases_client_id": item.cases_client_id
+            "cases_client_id": item.cases_client_id,
+            "clients_name":getClientData.clients_name,
+            "clients_rut": getClientData.clients_rut
         })
             return jsonify({"resp": list}),200
         else:
             resp = db.session.query(Clients).filter_by(clients_rut=rut).first()
             client_id= resp.clients_id
-            cases = db.session.query(Cases).filter_by(cases_client_id=client_id).all()
+            cases = db.session.query(Cases).filter_by(cases_client_id=client_id).all()#--->
 
             for item in cases:
                 list.append({
@@ -236,8 +241,8 @@ def cases(rut):
         for item2 in listOfNotEmptyStrings:
             print(incomingData[item2], item2)
             updateData.update({item2: incomingData[item2]})
-            db.session.commit()  
-            return "updated"      
+            db.session.commit()
+        return "updated"     
          
 
     if request.method == 'DELETE':
@@ -264,21 +269,15 @@ def documents(cases_rol_rit_ruc):
             resp = db.session.query(Cases).filter_by(cases_rol_rit_ruc=cases_rol_rit_ruc).first()
             cases_id= resp.cases_id
             documents = db.session.query(Documents).filter_by(documents_cases_id=cases_id).all()
-            #document_id = documents.documents_id
             for item in documents:
-                list.append({
-             "documents_type": item.documents_type,
-            "documents_date": item.documents_date,
-            "documents_cases_id": item.documents_cases_id
-        })
+                list.append({"documents_type": item.documents_type,"documents_date": item.documents_date, "documents_cases_id": item.documents_cases_id})
 
-            return jsonify({"resp": list})#, send_file(f'./pdf_store/document_id_{document_id}.pdf', attachment_filename='document_id_{document_id}.pdf'), 200
+            return jsonify({"resp": list})
 
     if request.method == 'POST':
-        incomingData = request.form
-        insertedData= Documents(documents_type=str(incomingData['documents_type']), documents_cases_id=incomingData['documents_cases_id'] )
+        incomingDataJSON = request.get_json()
+        insertedData= Documents(documents_type=str(incomingDataJSON['documents_type']), documents_cases_id=incomingDataJSON['documents_cases_id'] )
         db.session.add(insertedData)
-        db.session.commit()
 
         lastId = db.session.query(Documents).order_by(Documents.documents_id.desc()).limit(1)
         list=[]
@@ -286,14 +285,10 @@ def documents(cases_rol_rit_ruc):
             print(item.documents_id)
             list.append(item.documents_id)
 
-        profile = request.files['pdf']
-        uploads_dir = os.path.join('./', 'pdf_store')
-        print(uploads_dir)
-        profile.save(os.path.join(uploads_dir, secure_filename(f"[document_id {list[0]}].pdf"))) 
+        db.session.commit()
+
   
-
-
-        return jsonify({"resp": "ok"}),200
+        return jsonify({"resp": list[0]}),200 #DEVUELVE EL ULTIMO ID
 
     if request.method == 'PUT':
         incomingData = request.get_json()
@@ -317,3 +312,19 @@ def documents(cases_rol_rit_ruc):
         db.session.delete(deletedRow)
         db.session.commit()
         return "data deleted",200
+
+@app.route('/documentos/download/<string:id>', methods = ['GET'])# SE MUESTRA EN EL BUSCADOR DEL CLIENTE
+def documentsDownload(id):
+    if request.method == 'GET':
+        return send_file(f'./pdf_store/document_id_{id}.pdf', attachment_filename=f'document_id_{id}.pdf')
+
+@app.route('/documentos/upload/<int:id>', methods = ['POST'])# SE MUESTRA EN EL BUSCADOR DEL CLIENTE
+def documentsUpload(id):
+        
+        profile = request.files['pdf']
+        uploads_dir = os.path.join('./', 'pdf_store')
+        print(uploads_dir)
+        profile.save(os.path.join(uploads_dir, secure_filename(f"[document_id {id}].pdf"))) 
+
+        return "pdf saved in folder", 200
+
