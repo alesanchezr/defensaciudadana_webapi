@@ -2,6 +2,7 @@ from flask import Flask, jsonify, request, send_file
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import func
 from werkzeug import secure_filename
+from flask_cors import CORS, cross_origin
 import datetime
 import os
 
@@ -11,6 +12,7 @@ if not os.path.exists(path):
     os.mkdir(path)
 
 app = Flask(__name__) #instancio la aplicación Flask
+CORS(app)
 
 #configuraciones de la app Flask
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
