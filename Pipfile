@@ -9,7 +9,7 @@ verify_ssl = true
 flask = "*"
 flask-sqlalchemy = "*"
 flask-cors = "*"
-unicorn = "*"
+gunicorn = "*"
 
 [requires]
 python_version = "3.8"
