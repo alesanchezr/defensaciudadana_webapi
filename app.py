@@ -16,7 +16,7 @@ CORS(app)
 
 #configuraciones de la app Flask
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://guillermoPiedrab:Guillermo174027447@guillermoPiedrabuena.mysql.pythonanywhere-services.com/defensaciudadana_webapi' #'mysql+mysqlconnector://defensaciudadana:Guillermo174027447@localhost/defensaciudadana_webapi'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://guillermoPiedrab:@guillermoPiedrabuena.mysql.pythonanywhere-services.com/defensaciudadana_webapi' #'mysql+mysqlconnector://defensaciudadana:Guillermo174027447@localhost/defensaciudadana_webapi' OR (PYTHONANYWHERE) 'mysql+mysqlconnector://guillermoPiedrab:Guillermo174027447@guillermoPiedrabuena.mysql.pythonanywhere-services.com/defensaciudadana_webapi'
 
 db = SQLAlchemy(app) #instancio el objeto SQLAlchemy, pues estos son instancias de clases de los frameworck
 
