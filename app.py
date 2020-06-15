@@ -23,13 +23,13 @@ db = SQLAlchemy(app) #instancio el objeto SQLAlchemy, pues estos son instancias 
 
 class Clients(db.Model):
     clients_id = db.Column(db.Integer, primary_key=True)
-    clients_name = db.Column(db.String(50), unique=True, nullable=False)
+    clients_name = db.Column(db.String(100), unique=True, nullable=False)
     clients_rut = db.Column(db.String(16), unique=True, nullable=False)
     clients_nationality = db.Column(db.String(20), unique=False, nullable=True)
-    clients_civilStatus = db.Column(db.String(30), unique=False, nullable=True)
-    clients_job = db.Column(db.String(30), unique=False, nullable=True)
-    clients_address = db.Column(db.String(100), unique=False, nullable=True)
-    clients_contact = db.Column(db.String(40), unique=False, nullable=True)
+    clients_civilStatus = db.Column(db.String(70), unique=False, nullable=True)
+    clients_job = db.Column(db.String(100), unique=False, nullable=True)
+    clients_address = db.Column(db.String(300), unique=False, nullable=True)
+    clients_contact = db.Column(db.String(70), unique=False, nullable=True)
 
     clients_relationship_cases = db.relationship('Cases', backref='case_client')
     clients_relationship_corporations = db.relationship('Corporations', backref='corporation_client')
@@ -54,10 +54,10 @@ class Cases(db.Model):
     __tablename__ ='cases'
     cases_id = db.Column(db.Integer, primary_key=True)
     cases_description = db.Column(db.String(200), unique=False, nullable=False)
-    cases_rol_rit_ruc = db.Column(db.String(50), unique=False, nullable=True)
-    cases_trial_entity = db.Column(db.String(60), unique=False, nullable=False)
-    cases_legalIssue = db.Column(db.String(20), unique=False, nullable=True)
-    cases_procedure = db.Column(db.String(60), unique=False, nullable=True)
+    cases_rol_rit_ruc = db.Column(db.String(70), unique=False, nullable=True)
+    cases_trial_entity = db.Column(db.String(70), unique=False, nullable=False)
+    cases_legalIssue = db.Column(db.String(70), unique=False, nullable=True)
+    cases_procedure = db.Column(db.String(70), unique=False, nullable=True)
     cases_objetive = db.Column(db.String(100), unique=False, nullable=False)
     cases_update = db.Column(db.String(300), unique=False, nullable=True)
     cases_updateDate = db.Column(db.DateTime, unique=False, nullable = True)
