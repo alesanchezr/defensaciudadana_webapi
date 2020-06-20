@@ -272,7 +272,7 @@ def documents(cases_rol_rit_ruc):
             cases_id= resp.cases_id
             documents = db.session.query(Documents).filter_by(documents_cases_id=cases_id).all()
             for item in documents:
-                list.append({"documents_type": item.documents_type,"documents_date": item.documents_date, "documents_cases_id": item.documents_cases_id})
+                list.append({"documents_type": item.documents_type,"documents_date": item.documents_date, "documents_id": item.documents_id})
 
             return jsonify({"resp": list})
 
