@@ -243,8 +243,15 @@ def cases(rut):
         for item2 in listOfNotEmptyStrings:
             print(incomingData[item2], item2)
             updateData.update({item2: incomingData[item2]})
+
+            if item2 == "cases_update":#NO SE ESTA EJECUTANDO
+                today = str(datetime.datetime.now())
+                index = today.index(".")
+                today = today[0:index]
+                updateData.update({"cases_updateDate": str(today)})
+                db.session.commit()
             db.session.commit()
-        return "updated"     
+        return today    
          
 
     if request.method == 'DELETE':
