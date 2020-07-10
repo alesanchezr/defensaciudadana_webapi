@@ -74,6 +74,27 @@ class Cases(db.Model):
     def __repr__(self):
        return '<Cases %r>' %  self.cases_id, self.cases_description, self.cases_rol_rit_ruc, self.cases_trial_entity, self.cases_legalIssue, self.cases_procedure, self.cases_objetive, self.cases_update, self.cases_updateDate, self.cases_activeCase, self.cases_incomeDate, self.cases_deadLine, 
 
+class Lawyers(db.Model):
+    __tablename__ ='lawyers'
+    lawyers_id = db.Column(db.Integer, primary_key=True)
+    lawyers_name = db.Column(db.String(200), unique=True, nullable=False)
+    lawyers_field = db.Column(db.String(200), unique=True, nullable=False)
+    lawyers_rut = db.Column(db.String(20), unique=False, nullable=True)
+
+    lawyers_relationship_cases = db.relationship('Cases', backref='case_lawyer')
+
+
+    def __repr__(self):
+        return '<Lawyers %r>' % self.lawyers_id, self.lawyers_name, self.lawyers_field, self.lawyers_rut
+
+    def serialize(self):
+        return {
+            "lawyers_id": self.lawyers_id,
+            "lawyers_name": self.lawyers_name,
+            "lawyers_field": self.lawyers_field,
+            "lawyers_rut": self.lawyers_rut
+        }
+
 
 class Documents(db.Model):
     __tablename__='documents'
