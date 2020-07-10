@@ -67,6 +67,8 @@ class Cases(db.Model):
 
     #se pone minuscula la tabla clients pues mira directamente a la base de datos y no a la clase de python
     cases_client_id = db.Column(db.Integer, db.ForeignKey('clients.clients_id'), nullable=False)
+    cases_lawyer_id = db.Column(db.Integer, db.ForeignKey('lawyers.lawyers_id'), nullable=False)
+
     # establece relacion con tabla documents
     cases_relationship_documents = db.relationship('Documents', backref='case_document')
 
