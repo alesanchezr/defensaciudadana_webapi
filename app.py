@@ -86,14 +86,15 @@ class Lawyers(db.Model):
 
 
     def __repr__(self):
-        return '<Lawyers %r>' % self.lawyers_id, self.lawyers_name, self.lawyers_field, self.lawyers_rut
+        return '<Lawyers %r>' % self.lawyers_id, self.lawyers_name, self.lawyers_field, self.lawyers_rut, self.lawyers_password
 
     def serialize(self):
         return {
             "lawyers_id": self.lawyers_id,
             "lawyers_name": self.lawyers_name,
             "lawyers_field": self.lawyers_field,
-            "lawyers_rut": self.lawyers_rut
+            "lawyers_rut": self.lawyers_rut,
+            "lawyers_password": self.lawyers_password
         }
 
 
