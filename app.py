@@ -360,3 +360,60 @@ def documentsUpload(id):
 
         return "pdf saved in folder", 200
 
+      
+@app.route('/lawyers/<string:rut>', methods = ['GET', 'POST', 'PUT', 'DELETE'])
+def lawyers(rut):
+ if request.method == 'GET':
+        list=[]
+        if rut == "17.402.744-7" or rut == "20.968.696-1":
+            resp = db.session.query(Lawyers).all() #DEPURAR ESTO, TOMAR RESP Y QUE EL MODEL ARROJE UN OBJ DE TODOS LOS CAMPOS
+            for item in resp:
+                list.append({
+            "lawyers_id": item.lawyers_id,
+            "lawyers_name": item.lawyers_name,
+            "lawyers_field": item.lawyers_field,
+            "lawyers_rut": item.lawyers_rut,
+            "lawyers_password": item.lawyers_password
+        })
+            return jsonify({"resp": list}),200
+        else:
+            resp = db.session.query(Clients).filter_by(clients_rut=rut).all()
+            for item in resp:
+                list.append({
+            "lawyers_id": item.lawyers_id,
+            "lawyers_name": item.lawyers_name,
+            "lawyers_field": item.lawyers_field,
+            "lawyers_rut": item.lawyers_rut,
+            "lawyers_password": item.lawyers_passwordt
+        })
+            return jsonify({"resp": list}),200
+
+    if request.method == 'POST':
+        incomingData = request.get_json()
+        insertedData= Lawyers(lawyers_name=incomingData['name'], lawyers_field=incomingData['field'], lawyers_rut=incomingData['rut'], lawyers_password=incomingData['password'])
+        db.session.add(insertedData)
+        db.session.commit()
+        lastId = insertedData.clients_id
+        return jsonify({"resp": "inserted data", "lastId": str(lastId)}),200
+
+    if request.method == 'PUT':
+        incomingData = request.get_json()
+        updateData= Lawyers.query.filter_by(lawyers_rut=rut)
+
+        listOfNotEmptyStrings = []
+        for item in incomingData:
+            if incomingData[item] != "":
+                listOfNotEmptyStrings.append(item)
+
+        for item2 in listOfNotEmptyStrings:
+            print(incomingData[item2], item2)
+            updateData.update({item2: incomingData[item2]})
+            db.session.commit()
+        return "updated"
+       
+    if request.method == 'DELETE':
+        deletedRow= Lawyers.query.filter_by(lawyers_rut=rut).first()
+        db.session.delete(deletedRow)
+        db.session.commit()
+        return "data deleted",200
+
