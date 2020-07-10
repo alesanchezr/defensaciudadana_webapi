@@ -78,8 +78,9 @@ class Lawyers(db.Model):
     __tablename__ ='lawyers'
     lawyers_id = db.Column(db.Integer, primary_key=True)
     lawyers_name = db.Column(db.String(200), unique=True, nullable=False)
-    lawyers_field = db.Column(db.String(200), unique=True, nullable=False)
-    lawyers_rut = db.Column(db.String(20), unique=False, nullable=True)
+    lawyers_field = db.Column(db.String(200), unique=False, nullable=False)
+    lawyers_rut = db.Column(db.String(20), unique=True, nullable=False)
+    lawyers_password = db.Column(db.String(100), unique=False, nullable=False)
 
     lawyers_relationship_cases = db.relationship('Cases', backref='case_lawyer')
 
