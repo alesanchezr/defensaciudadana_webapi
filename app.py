@@ -300,11 +300,17 @@ def documents(cases_rol_rit_ruc):
         })
             return jsonify({"resp": list}),200
         else:
-            resp = db.session.query(Cases).filter_by(cases_rol_rit_ruc=cases_rol_rit_ruc).first()
-            cases_id= resp.cases_id
-            documents = db.session.query(Documents).filter_by(documents_cases_id=cases_id).all()
-            for item in documents:
-                list.append({"documents_type": item.documents_type,"documents_date": item.documents_date, "documents_id": item.documents_id})
+            if "-" in cases_rol_rit_ruc or "°" in cases_rol_rit_ruc:
+                resp = db.session.query(Cases).filter_by(cases_rol_rit_ruc=cases_rol_rit_ruc).first()
+                cases_id= resp.cases_id
+                documents = db.session.query(Documents).filter_by(documents_cases_id=cases_id).all()
+                for item in documents:
+                    list.append({"documents_type": item.documents_type,"documents_date": item.documents_date, "documents_id": item.documents_id})
+
+            if "-" not in cases_rol_rit_ruc and "°" not in cases_rol_rit_ruc:
+                documents = db.session.query(Documents).filter_by(documents_cases_id=cases_rol_rit_ruc).all()
+                for item in documents:
+                    list.append({"documents_type": item.documents_type,"documents_date": item.documents_date, "documents_id": item.documents_id})
 
             return jsonify({"resp": list})
 
