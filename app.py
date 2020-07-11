@@ -251,7 +251,7 @@ def cases(rut):
 
     if request.method == 'POST':
         incomingData = request.get_json()
-        insertedData= Cases(cases_description=incomingData['cases_description'], cases_rol_rit_ruc=incomingData['cases_rol_rit_ruc'], cases_trial_entity=incomingData['cases_trial_entity'], cases_legalIssue=incomingData['cases_legalIssue'], cases_procedure=incomingData['cases_procedure'], cases_objetive=incomingData['cases_objetive'], cases_update=incomingData['cases_update'], cases_activeCase=incomingData['cases_activeCase'], cases_client_id=incomingData['cases_client_id'] )
+        insertedData= Cases(cases_description=incomingData['cases_description'], cases_rol_rit_ruc=incomingData['cases_rol_rit_ruc'], cases_trial_entity=incomingData['cases_trial_entity'], cases_legalIssue=incomingData['cases_legalIssue'], cases_procedure=incomingData['cases_procedure'], cases_objetive=incomingData['cases_objetive'], cases_update=incomingData['cases_update'], cases_activeCase=incomingData['cases_activeCase'], cases_client_id=incomingData['cases_client_id'], cases_lawyer_id=incomingData['cases_lawyer_id'] )
         db.session.add(insertedData)
         db.session.commit()
         return "data inserted",200
