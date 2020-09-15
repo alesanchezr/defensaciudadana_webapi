@@ -10,8 +10,11 @@ flask = "*"
 flask-sqlalchemy = "*"
 flask-cors = "*"
 gunicorn = "*"
-werkzeug = "0.16.0"
+werkzeug = "*"
 requests="*"
+mysqlclient = "*"
+mysql-connector-python = "*"
+flask-migrate = "*"
 
 [requires]
 python_version = "3.8"
