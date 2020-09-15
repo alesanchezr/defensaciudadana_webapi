@@ -16,4 +16,4 @@ tasks:
         pipenv run flask db migrate;
         pipenv run flask db upgrade;
       command: >
-        pipenv run start;
+        pipenv run python src/app.py;
