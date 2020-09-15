@@ -1,7 +1,7 @@
 import datetime, os
 from flask import Flask, jsonify, request, send_file, Blueprint
 from werkzeug.utils import secure_filename
-from models import db, Clients, Cases, Lawyers, Corporations
+from models import db, Clients, Cases, Lawyers, Corporations, Documents
 
 all_routes = Blueprint('all_routes', __name__)
 
