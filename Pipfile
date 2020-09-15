@@ -10,8 +10,11 @@ flask = "*"
 flask-sqlalchemy = "*"
 flask-cors = "*"
 gunicorn = "*"
-werkzeug = "*"
+werkzeug = "0.16.0"
 requests="*"
 
 [requires]
 python_version = "3.8"
+
+[scripts]
+start="python app.py"
